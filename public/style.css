@@ -1,0 +1,16 @@
+label{
+    color: grey;
+}
+
+h2{
+    color:darkred;
+    padding-left: 60px;
+}
+
+.sdata{
+    color: darkred;
+}
+
+li{
+    margin: 10px;
+}

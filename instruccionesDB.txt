@@ -1,0 +1,53 @@
+paso 1: crear carpeta "routes" con un archivo JS "routes" dentro, esto servira para hacer de enrutador.
+    1.1- const express = require('express');
+    1.2- const router = express.Router();
+    1.3- module.exports = router; para poder exportarlo a otros archivos y que sepan donde esta.
+    1.4- añadir rutas con router.get(...) por ejemplo
+    1.5- const router = require('../routes/routes.js') // ponerlo en app.ts
+    1.6- app.use("/", router) // esto sirve para decirle que cada vez que vaya a consultarse una ruta, tiene que ir a este objeto (router)
+
+
+
+paso 2: Crear carpeta "services" donde va a estar nuestro "db.js"
+    2.1- rellenar luego, primero necesitamos archivo de configuracion que será "config.js" en raíz del proyecto:
+#         const config = {
+#           host:'localhost',
+#           port:'3306',
+#           user:'root',
+#           password:'root',
+#           database:'',
+#         }
+
+    2.2- "module.exports = config;" para exportarlo
+    2.3- instalar "npm install mysql2 -s" 
+
+paso 3: Despues de crear "db.js" lo rellenamos:
+
+    3.1- const mysql = require("mysql2/promise");
+    3.2- const config = require("../config.js"); para obtener los parámetros de la base de datos que hemos creado en el punto 2.1
+    3.3- async function query(sql);  Aqui creamos una funcion asincrona, en query, le pasamos como parámetro una consulta SQL.
+    3.4- ampliamos la funcion async de antes:
+
+        async function query(sql){
+            try{
+                const connection = await mysql.createConnection(config); esto es para crear la conexión con la base de datos, el await es para esperar a que se conecte antes de consultar.
+                const [results, ] = await connection.execute(sql); una vez tenemos la conexion creada, creamos un array para los resultados recibidos (ATENTO al espacio en blanco), luego ejecutar la conexion
+                return results;
+            }catch(err){
+                throw(err);
+            }
+        }
+
+    3.5- module.exports = {query}; luego exportamos la funcion en si (ATENTO A LAS LLAVES, eso hace que la función se pase como objeto)
+
+
+paso 4: Ahora hay que crear el controlador, que comunicará el modelo con la vista.
+
+    4.1 Se crea un archivo llamado "controller.js" (por ejemplo) en BUILD.
+    4.2 const db = require('../services/db.js')    Para comunicar primero necesito requerir la base de datos.
+    4.3 exports.userData = async (req,res)=>{         Funcion asíncrona necesaria.
+        let data = await  db.query('SELECT * FROM users.users');
+        res.send(datos)
+        }
+
+    4.4 router.get("/userData", controller.userData) EN EL CONTROLADOR ACTUALIZO ESTO, pero para ello debo requerir const controller = require('../build/controller.js');
